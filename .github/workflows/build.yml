@@ -12,11 +12,14 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.4'
-      - run: gradle wrapper --gradle-version=8.4 --distribution-type=bin
-      - run: chmod +x gradlew
+      - name: Install Gradle
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip
+          unzip -q gradle-8.4-bin.zip
+          export PATH=$PWD/gradle-8.4/bin:$PATH
+          gradle wrapper
+          chmod +x gradlew
+          echo "PATH=$PWD/gradle-8.4/bin:$PATH" >> $GITHUB_ENV
       - run: echo "# rules" > app/proguard-rules.pro
       - run: ./gradlew assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
